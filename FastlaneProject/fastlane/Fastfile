@@ -1,0 +1,68 @@
+profiles_output_path = './profiles'
+certificates_output_path = './certificates'
+slack_webhook = 'https://...'           
+slack_default_channel = '#channel'
+
+default_platform(:ios)
+platform :ios do
+  desc "Push a new beta build to TestFlight"											                      #1
+  lane :beta do
+    build_app(workspace: "FastlaneProject.xcworkspace", scheme: "FastlaneProject")      #2
+    upload_to_testflight														                                		#3
+  end
+
+  desc "Create provisioning certificate"                                                
+  lane :codeSign do                                                                     #4    
+   dev                                                                                  #5 
+   #prod
+
+  end
+
+  desc "Create development provisioning certificate"                                    #6            
+  lane :dev do                                                                              
+    cert(
+      development: true,                                                                
+      username: "ikbalyasar@gmail.com",
+      output_path: certificates_output_path                                                  
+    )
+    sigh(
+      force: true,
+      development: true,                                                                
+      username: "ikbalyasar@gmail.com",
+      app_identifier: "tr.ikbSoft.FastlaneProject",
+      output_path: profiles_output_path                                      
+      )
+  end
+
+  desc "Create production provisioning certificate"                                   #7              
+  lane :prod do                                                                         
+    cert(
+      development: false,                                                                
+      username: "ikbalyasar@gmail.com",
+      output_path: certificates_output_path                                                  
+    )
+    sigh(
+      force: true,
+      development: false,                                                                
+      username: "ikbalyasar@gmail.com",
+      app_identifier: "tr.ikbSoft.FastlaneProject",
+      output_path: profiles_output_path                                      
+      )
+  end
+
+  desc "Create adHoc provisioning certificate"                                    #6            
+  lane :adHoc do                                                                              
+    cert(
+      adhoc: true,                                                                
+      username: "ikbalyasar@gmail.com",
+      output_path: certificates_output_path                                                  
+    )
+    sigh(
+      force: true,
+      adhoc: true,                                                                
+      username: "ikbalyasar@gmail.com",
+      app_identifier: "tr.ikbSoft.FastlaneProject",
+      output_path: profiles_output_path                                      
+      )
+  end
+end
